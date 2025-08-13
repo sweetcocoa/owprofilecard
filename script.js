@@ -25,6 +25,7 @@ const inputs = {
   nickname: document.getElementById('nickname'),
   realname: document.getElementById('realname'),
   position: document.getElementById('position'),
+  tier: document.getElementById('tier'),
   hero1: document.getElementById('hero1'),
   hero2: document.getElementById('hero2'),
   hero3: document.getElementById('hero3'),
@@ -78,11 +79,47 @@ function titleCase(slug) {
     .replace(/\b\w/g, c => c.toUpperCase());
 }
 
+// Tier options (Unranked, Bronze1-5 ... Grandmaster1-5)
+const TIER_GROUPS = [
+  { key: 'unranked', label: '언랭', levels: [] },
+  { key: 'bronze', label: '브론즈', levels: [1,2,3,4,5] },
+  { key: 'silver', label: '실버', levels: [1,2,3,4,5] },
+  { key: 'gold', label: '골드', levels: [1,2,3,4,5] },
+  { key: 'platinum', label: '플래티넘', levels: [1,2,3,4,5] },
+  { key: 'diamond', label: '다이아', levels: [1,2,3,4,5] },
+  { key: 'master', label: '마스터', levels: [1,2,3,4,5] },
+  { key: 'grandmaster', label: '그랜드마스터', levels: [1,2,3,4,5] },
+];
+
+function populateTierSelect(selectEl) {
+  selectEl.innerHTML = '';
+  TIER_GROUPS.forEach(group => {
+    if (group.levels.length === 0) {
+      const opt = document.createElement('option');
+      opt.value = `${group.key}`;
+      opt.textContent = group.label;
+      selectEl.appendChild(opt);
+    } else {
+      const og = document.createElement('optgroup');
+      og.label = group.label;
+      group.levels.forEach(lvl => {
+        const opt = document.createElement('option');
+        opt.value = `${group.key}-${lvl}`;
+        opt.textContent = `${group.label} ${lvl}`;
+        og.appendChild(opt);
+      });
+      selectEl.appendChild(og);
+    }
+  });
+}
+
 // Populate selects
 [inputs.hero1, inputs.hero2, inputs.hero3].forEach(populateHeroSelect);
 inputs.hero1.value = 'dps/tracer.png';
 inputs.hero2.value = 'support/mercy.png';
 inputs.hero3.value = 'tank/winston.png';
+populateTierSelect(inputs.tier);
+inputs.tier.value = 'gold-3';
 
 // State
 let uploadedImage = null; // Image object from user upload
@@ -106,6 +143,7 @@ inputs.photo.addEventListener('change', (e) => {
   inputs.nickname.addEventListener(evt, draw);
   inputs.realname.addEventListener(evt, draw);
   inputs.position.addEventListener(evt, draw);
+  inputs.tier.addEventListener(evt, draw);
   inputs.hero1.addEventListener(evt, draw);
   inputs.hero2.addEventListener(evt, draw);
   inputs.hero3.addEventListener(evt, draw);
@@ -216,6 +254,40 @@ async function draw() {
   ctx.textAlign = 'right';
   ctx.fillText(POSITION_BADGES[pos].text, badgeX - 22, badgeY + badgeH / 2 + 2);
   ctx.textAlign = 'left';
+
+  // Tier badge image left to position badge (hidden for unranked)
+  const tierValue = inputs.tier.value || 'unranked';
+  if (tierValue !== 'unranked') {
+    const tierGroup = tierValue.split('-')[0];
+    const groupToFile = {
+      bronze: 'Bronze.webp',
+      silver: 'Silver.webp',
+      gold: 'Gold.webp',
+      platinum: 'Platinum.webp',
+      diamond: 'Diamond.webp',
+      master: 'Master.webp',
+      grandmaster: 'Grandmaster.png'
+    };
+    const file = groupToFile[tierGroup];
+    if (file) {
+      try {
+        const tierImg = await loadImage(`./assets/tier_badges/${file}`);
+        const tierH = badgeH;
+        const aspect = tierImg.width / tierImg.height;
+        const tierW = tierH * aspect;
+        const gap = 12;
+        const tierX = (badgeX - badgeW) - gap - tierW;
+        const tierY = badgeY;
+        ctx.save();
+        drawRoundedRectPath(ctx, tierX, tierY, tierW, tierH, 14);
+        ctx.clip();
+        ctx.drawImage(tierImg, tierX, tierY, tierW, tierH);
+        ctx.restore();
+      } catch (e) {
+        // ignore load error
+      }
+    }
+  }
 
   // Player photo area
   const photoX = framePadding + 48;
