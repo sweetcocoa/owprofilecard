@@ -173,7 +173,7 @@ async function draw() {
   ctx.stroke();
 
   // Header
-  const headerY = framePadding + 42;
+  const headerY = framePadding + 72;
   ctx.font = '700 64px Pretendard, system-ui, sans-serif';
   ctx.fillStyle = '#eaf0ff';
   ctx.textBaseline = 'middle';
@@ -206,8 +206,11 @@ async function draw() {
   ctx.stroke();
   ctx.restore();
 
-  // position icon + text inside badge
-  drawPositionIcon(ctx, pos, badgeX - badgeW + 20, badgeY + badgeH / 2, 28, hue);
+  // position icon + text inside badge (keep icon fully within left padding)
+  const iconSize = 28;
+  const badgeLeft = badgeX - badgeW;
+  const iconCenterX = badgeLeft + 18 + iconSize; // left margin + radius to avoid overflow
+  drawPositionIcon(ctx, pos, iconCenterX, badgeY + badgeH / 2, iconSize, hue);
   ctx.font = '800 34px Pretendard, system-ui, sans-serif';
   ctx.fillStyle = '#0b0f16';
   ctx.textAlign = 'right';
@@ -245,10 +248,12 @@ async function draw() {
   ctx.restore();
 
   // Most heroes strip
-  const heroesY = photoY + photoH + 48;
   const heroBoxW = Math.floor((photoW - 2 * 36) / 3); // 3 columns with gaps
-  const labelHeight = 72;
+  const labelHeight = 64; // slightly tighter label area
   const heroBoxH = heroBoxW + labelHeight; // square portrait + label
+  const bottomMargin = 96; // reduce large blank space below hero row
+  const minTop = photoY + photoH + 36; // avoid overlapping photo area
+  const heroesY = Math.max(minTop, height - framePadding - bottomMargin - heroBoxH);
 
   const heroSelections = [inputs.hero1.value, inputs.hero2.value, inputs.hero3.value];
   const heroImages = await Promise.all(heroSelections.map(async (rel) => {
