@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>오버워치 프로필 카드 생성기</title>
+    <meta name="description" content="오버워치 선수용 프로필 카드 이미지 생성기" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+    <main class="container">
+        <section class="controls" aria-label="프로필 카드 설정">
+            <h1>오버워치 프로필 카드 생성기</h1>
+            <form id="profile-form">
+                <div class="field-row">
+                    <label for="nickname">닉네임</label>
+                    <input type="text" id="nickname" name="nickname" placeholder="예: Alpha" maxlength="24" />
+                </div>
+                <div class="field-row">
+                    <label for="realname">실명</label>
+                    <input type="text" id="realname" name="realname" placeholder="예: 홍길동" maxlength="24" />
+                </div>
+                <div class="field-row">
+                    <label for="position">포지션</label>
+                    <select id="position" name="position">
+                        <option value="DPS">DPS</option>
+                        <option value="SUPPORT">SUPPORT</option>
+                        <option value="TANK">TANK</option>
+                        <option value="FLEX">FLEX</option>
+                    </select>
+                </div>
+
+                <fieldset class="fieldset">
+                    <legend>모스트 3 영웅</legend>
+                    <div class="grid-heroes">
+                        <div class="field-row">
+                            <label for="hero1">1순위</label>
+                            <select id="hero1" name="hero1"></select>
+                        </div>
+                        <div class="field-row">
+                            <label for="hero2">2순위</label>
+                            <select id="hero2" name="hero2"></select>
+                        </div>
+                        <div class="field-row">
+                            <label for="hero3">3순위</label>
+                            <select id="hero3" name="hero3"></select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="field-row">
+                    <label for="photo">선수 사진 업로드</label>
+                    <input type="file" id="photo" name="photo" accept="image/*" />
+                </div>
+
+                <div class="actions">
+                    <button type="button" id="download-btn">PNG로 다운로드</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="preview" aria-label="미리보기">
+            <div class="canvas-wrap">
+                <canvas id="card-canvas" width="1080" height="1920" aria-label="프로필 카드"></canvas>
+            </div>
+            <p class="hint">입력값을 변경하면 미리보기가 자동으로 갱신됩니다.</p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>GitHub Pages 정적 사이트 • 로컬에서 테스트 후 저장/커밋하세요.</p>
+    </footer>
+
+    <script src="./script.js"></script>
+    
+</body>
+</html>
+
+
